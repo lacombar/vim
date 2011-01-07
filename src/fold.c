@@ -478,6 +478,7 @@ newFoldLevel(void)
 	    if (wp != curwin && foldmethodIsDiff(wp) && wp->w_p_scb)
 	    {
 		wp->w_p_fdl = curwin->w_p_fdl;
+		wp->w_p_fdn = curwin->w_p_fdn;
 		newFoldLevelWin(wp);
 	    }
 	}
@@ -618,7 +619,7 @@ foldCreate(linenr_T start, linenr_T end)
 	    if (use_level || fp->fd_flags == FD_LEVEL)
 	    {
 		use_level = TRUE;
-		if (level >= curwin->w_p_fdl)
+		if (level >= curwin->w_p_fdl && level < curwin->w_p_fdn)
 		    closed = TRUE;
 	    }
 	    else if (fp->fd_flags == FD_CLOSED)
@@ -1310,7 +1311,7 @@ setManualFoldWin(
 	if (use_level || fp->fd_flags == FD_LEVEL)
 	{
 	    use_level = TRUE;
-	    if (level >= wp->w_p_fdl)
+	    if (level >= wp->w_p_fdl && level < wp->w_p_fdn)
 		fp->fd_flags = FD_CLOSED;
 	    else
 		fp->fd_flags = FD_OPEN;
@@ -1652,7 +1653,7 @@ check_closed(
     if (*use_levelp || fp->fd_flags == FD_LEVEL)
     {
 	*use_levelp = TRUE;
-	if (level >= win->w_p_fdl)
+	if (level >= win->w_p_fdl && level < win->w_p_fdn)
 	    closed = TRUE;
     }
     else if (fp->fd_flags == FD_CLOSED)
